@@ -42,21 +42,22 @@ namespace Functor {
 namespace Monad {
   template <>
   struct Monad<List> {
-    template<typename A>
-    static List<A> pure(const A& x) { return List<A>({x}); }
+    template <typename A>
+    static List<A> pure(const A& x) {
+      return List<A>({x});
+    }
 
     template <typename F, typename A>
     static auto bind(const List<A>& l, F&& f) {
       std::result_of_t<F(A)> result;
       for (const A& x : l) {
         auto subresult = std::forward<F>(f)(x);
-        std::copy(
-            subresult.begin(), subresult.end(), std::back_inserter(result));
+        std::copy(subresult.begin(), subresult.end(), std::back_inserter(result));
       }
       return result;
     }
 
-    template<typename A>
+    template <typename A>
     static auto join(const List<List<A>>& l) {
       List<A> result;
       for (const List<A>& x : l) {

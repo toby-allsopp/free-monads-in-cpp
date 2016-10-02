@@ -14,7 +14,7 @@
 // Could also use std::tuple<>.
 struct unit {};
 
-std::ostream &operator<<(std::ostream &os, unit) { return os << "unit{}"; }
+std::ostream& operator<<(std::ostream& os, unit) { return os << "unit{}"; }
 
 // data Prog a = Read (Int -> a) | Write Int (() -> a)
 template <typename Next>
@@ -33,11 +33,11 @@ struct Prog {
 };
 
 template <typename Next>
-std::ostream &operator<<(std::ostream &os, const Read<Next> &) {
+std::ostream& operator<<(std::ostream& os, const Read<Next>&) {
   return os << "Read{" /*<< read.next*/ << "}";
 }
 template <typename Next>
-std::ostream &operator<<(std::ostream &os, const Write<Next> &write) {
+std::ostream& operator<<(std::ostream& os, const Write<Next>& write) {
   return os << "Write{" << write.x /*<< ", " << write.next*/ << "}";
 }
 
@@ -56,21 +56,19 @@ namespace Functor {
   template <>
   struct Functor<Prog> {
     template <typename Fun, typename Next>
-    static Prog<std::result_of_t<Fun(Next)>> fmap(Fun &&fun,
-                                                  const Prog<Next> &prog) {
+    static Prog<std::result_of_t<Fun(Next)>> fmap(Fun&& fun, const Prog<Next>& prog) {
       using Res = std::result_of_t<Fun(Next)>;
       struct Visitor {
-        Fun &fun;
+        Fun& fun;
         // fmap f (Read n) = Read (f . n)
-        Prog<Res> operator()(const Read<Next> &read) const {
-          auto &f = this->fun;  // VS doesn't like fun=this->fun in the lambda
+        Prog<Res> operator()(const Read<Next>& read) const {
+          auto& f = this->fun;  // VS doesn't like fun=this->fun in the lambda
           return make_read([f, read](int x) { return f(read.next(x)); });
         }
         // fmap f (Write x n) = Write x (f . n)
-        Prog<Res> operator()(const Write<Next> &write) const {
-          auto &f = this->fun;
-          return make_write(
-              write.x, [f, write](unit u) { return f(write.next(u)); });
+        Prog<Res> operator()(const Write<Next>& write) const {
+          auto& f = this->fun;
+          return make_write(write.x, [f, write](unit u) { return f(write.next(u)); });
         }
       };
       return boost::apply_visitor(Visitor{fun}, prog.v);
@@ -86,11 +84,9 @@ struct Interpret {
   template <typename A>
   List<A> operator()(Prog<A> prog) {
     struct Visitor {
-      List<int> &l;
-      List<A> operator()(const Read<A> &r) const {
-        return Functor::fmap(r.next, l);
-      }
-      List<A> operator()(const Write<A> &w) {
+      List<int>& l;
+      List<A> operator()(const Read<A>& r) const { return Functor::fmap(r.next, l); }
+      List<A> operator()(const Write<A>& w) {
         l.push_back(w.x);
         return {w.next(unit{})};
       }
@@ -153,8 +149,7 @@ TEST_CASE("Free monad for Prog") {
   //   y <- readF
   //   pure (x + y)
   auto free = writeF(10) >> readF >>= [](int x) {
-    return writeF(20) >> readF >>=
-           [x](int y) { return Monad::pure<Program>(x + y); };
+    return writeF(20) >> readF >>= [x](int y) { return Monad::pure<Program>(x + y); };
   };
   CHECK(run(free) == List<int>({20, 30}));
 }

@@ -80,13 +80,11 @@ namespace Free {
       template <template <typename> class F>
       auto operator()(const Bind<F, A>& b) const {
         using Functor::fmap;
-        return make_bind(
-            fmap([&](const auto& f) { return fmap(fun, f); }, b.x));
+        return make_bind(fmap([&](const auto& f) { return fmap(fun, f); }, b.x));
       }
     };
     template <typename A, typename Fn>
-    static Wrapper<std::result_of_t<Fn(A)>> fmap(Fn&& fun,
-                                                 const Wrapper<A>& f) {
+    static Wrapper<std::result_of_t<Fn(A)>> fmap(Fn&& fun, const Wrapper<A>& f) {
       return boost::apply_visitor(Visitor<A, Fn>{fun}, f.v);
     }
   };
@@ -171,8 +169,7 @@ namespace Free {
    */
   template <template <typename> class F, typename A>
   Free<F, A> liftFree(const F<A>& x) {
-    return make_bind<F>(
-        Functor::fmap([](const A& a) { return make_return<F>(a); }, x));
+    return make_bind<F>(Functor::fmap([](const A& a) { return make_return<F>(a); }, x));
   }
 
   /*
@@ -190,8 +187,7 @@ namespace Free {
 
       auto operator()(const Return<F, A>& r) { return Monad::pure<M>(r.a); }
       auto operator()(const Bind<F, A>& b) {
-        return fun(b.x) >>=
-               [&](const auto& x) { return foldFree<M, F>(fun, x); };
+        return fun(b.x) >>= [&](const auto& x) { return foldFree<M, F>(fun, x); };
       }
     };
     Visitor v{fun};
@@ -201,19 +197,17 @@ namespace Free {
 
 namespace Functor {
   template <template <typename> class Wrapper>
-  struct Functor<
-      Wrapper,
-      std::enable_if_t<std::is_base_of<typename Wrapper<void>::WrappedFree,
-                                       Wrapper<void>>::value>>
+  struct Functor<Wrapper,
+                 std::enable_if_t<std::is_base_of<typename Wrapper<void>::WrappedFree,
+                                                  Wrapper<void>>::value>>
       : Free::FunctorImpl<Wrapper> {};
 }
 
 namespace Monad {
   template <template <typename> class Wrapper>
-  struct Monad<
-      Wrapper,
-      std::enable_if_t<std::is_base_of<typename Wrapper<void>::WrappedFree,
-                                       Wrapper<void>>::value>>
+  struct Monad<Wrapper,
+               std::enable_if_t<std::is_base_of<typename Wrapper<void>::WrappedFree,
+                                                Wrapper<void>>::value>>
       : Free::MonadImpl<Wrapper> {};
 }
 

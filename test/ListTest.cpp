@@ -22,20 +22,16 @@ TEST_CASE("List monad") {
     //   x <- l
     //   y <- pure (x*x)
     //   [x, y]
-    REQUIRE(Monad::bind(l, [](int x) {
-              return Monad::bind(pure<List>(x * x), [x](int y) {
-                return List<int>({x, y});
-              });
-            }) == List<int>({1, 1, 2, 4, 3, 9}));
-    REQUIRE(Monad::bind(l, [](int x) {
-              return Monad::bind(pure<List>(x * x), [x](int y) {
-                return List<int>({x, y});
-              });
-            }) == List<int>({1, 1, 2, 4, 3, 9}));
+    REQUIRE(
+        Monad::bind(l, [](int x) {
+          return Monad::bind(pure<List>(x * x), [x](int y) { return List<int>({x, y}); });
+        }) == List<int>({1, 1, 2, 4, 3, 9}));
+    REQUIRE(
+        Monad::bind(l, [](int x) {
+          return Monad::bind(pure<List>(x * x), [x](int y) { return List<int>({x, y}); });
+        }) == List<int>({1, 1, 2, 4, 3, 9}));
     REQUIRE((l >>= [](int x) {
-              return pure<List>(x * x) >>= [x](int y) {
-                return List<int>({x, y});
-              };
+              return pure<List>(x * x) >>= [x](int y) { return List<int>({x, y}); };
             }) == (List<int>{1, 1, 2, 4, 3, 9}));
     List<int> l1 = Monad::bind(l, [](int x) -> List<int> {
       return Monad::bind(pure<List>(x * x), [x](int y) -> List<int> {

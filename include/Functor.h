@@ -25,12 +25,11 @@ namespace Functor {
     struct dummy2 {};
 
     template <template <typename> class T>
-    struct IsFunctorT<
-        T,
-        void_t<std::enable_if_t<std::is_same<
-            T<dummy2>,
-            decltype(Functor<T>::fmap(std::declval<dummy2(dummy1)>(),
-                                      std::declval<T<dummy1>>()))>::value>>>
+    struct IsFunctorT<T,
+                      void_t<std::enable_if_t<std::is_same<
+                          T<dummy2>,
+                          decltype(Functor<T>::fmap(std::declval<dummy2(dummy1)>(),
+                                                    std::declval<T<dummy1>>()))>::value>>>
         : std::true_type {};
 #endif
   }
@@ -55,8 +54,7 @@ namespace Functor {
   template <>
   struct Functor<Test::NullFunctor> {
     template <typename F, typename A>
-    static Test::NullFunctor<std::result_of_t<F(A)>> fmap(
-        F, Test::NullFunctor<A>) {
+    static Test::NullFunctor<std::result_of_t<F(A)>> fmap(F, Test::NullFunctor<A>) {
       return {};
     }
   };

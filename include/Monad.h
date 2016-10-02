@@ -11,9 +11,7 @@ namespace Monad {
     struct IsMonadT : std::false_type {};
 
     template <template <typename> class M>
-    struct IsMonadT<
-        M,
-        std::enable_if_t<Functor::IsFunctor<M> && sizeof(Monad<M>) >= 1>>
+    struct IsMonadT<M, std::enable_if_t<Functor::IsFunctor<M> && sizeof(Monad<M>) >= 1>>
         : std::true_type {};
   }
 

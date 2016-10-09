@@ -34,3 +34,19 @@ add_subdirectory(test)
 
 enable_testing()
 add_test(NAME Test COMMAND TestRunner)
+
+# Support for building Markdown from the specially marked up source files.
+find_program(CPP2BLOG cpp2blog PATHS /home/toby/.local/bin)
+
+set(ARTICLE_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Functor.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Monad.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/List.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Free.h)
+add_custom_command(
+  OUTPUT article.md
+  COMMAND ${CPP2BLOG} ${ARTICLE_SOURCES} >article.md
+  DEPENDS ${ARTICLE_SOURCES}
+  )
+add_custom_target(article
+  DEPENDS article.md)

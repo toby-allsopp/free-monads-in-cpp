@@ -82,16 +82,6 @@ namespace Monad {
       }
       return result;
     }
-
-    // join :: List (List a) -> List a
-    template <typename A>
-    static List<A> join(const List<List<A>>& l) {
-      List<A> result;
-      for (const List<A>& x : l) {
-        std::copy(x.begin(), x.end(), std::back_inserter(result));
-      }
-      return result;
-    }
   };
   static_assert(IsMonad<List>, "List should be a Monad");
 }

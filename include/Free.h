@@ -204,27 +204,6 @@ namespace Free {
       return make_return<typename Wrapper<A>::WrappedFree>(x);
     }
 
-    // join :: Free f (Free f a) -> Free f a
-    // join = (>>= )
-    // using JoinResType = Free::Free<typename
-    // Functor::Functor<F>::ContainedType>;
-    // static JoinResType join(const Free::Free<F>& x) {
-    //     struct Visitor
-    //     {
-    //         using result_type = JoinResType;
-    //         result_type operator()(const Free::Bind<F>& b)
-    //         {
-    //             return Free::Bind<G>{Functor::fmap(
-    //                 [](const Free::Free<F>& x) { return x; },
-    //                 b.x)};
-    //         }
-    //         result_type operator()(const Free::Return<F>& r) { return r.a;
-    //         }
-    //     };
-    //     Visitor v{};
-    //     return boost::apply_visitor(v, x);
-    // }
-
     // bind :: Free f a -> (a -> Free f b) -> Free f b
     template <typename A, typename Fn>
     struct BindVisitor {

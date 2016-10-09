@@ -63,14 +63,6 @@ namespace Monad {
     return Monad<M>::pure(x);
   }
 
-  // join :: (Monad m) => m (m a) -> m a
-  template <template <typename> class M,
-            typename A,
-            typename = std::enable_if_t<IsMonad<M>>>
-  M<A> join(const M<M<A>>& x) {
-    return Monad<M>::join(x);
-  }
-
   // bind :: (Monad m) => m a -> (a -> m b) -> m b
   template <typename F,
             template <typename> class M,
@@ -78,8 +70,6 @@ namespace Monad {
             typename = std::enable_if_t<IsMonad<M>>>
   std::result_of_t<F(A)> bind(const M<A>& m, F&& f) {
     return Monad<M>::bind(m, std::forward<F>(f));
-    // bind = join . (flip fmap)
-    // return join(Functor::fmap(std::forward<F>(f), m));
   }
 }
 

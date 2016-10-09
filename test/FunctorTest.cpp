@@ -1,8 +1,9 @@
 #include "Functor.h"
+#include "void_t.h"
 
 int id(int x) { return x; }
 
-template <template <typename> class, typename = void_t<>>
+template <template <typename> class, typename = void>
 struct fmap_compiles_t : std::false_type {};
 template <template <typename> class T>
 struct fmap_compiles_t<T, void_t<decltype(fmap(id, T<int>{}))>> : std::true_type {};

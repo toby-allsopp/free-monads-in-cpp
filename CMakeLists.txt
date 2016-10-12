@@ -44,9 +44,16 @@ set(ARTICLE_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/include/List.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Free.h)
 add_custom_command(
-  OUTPUT article.md
-  COMMAND ${CPP2BLOG} ${ARTICLE_SOURCES} >article.md
+  OUTPUT implementation.md
+  COMMAND ${CPP2BLOG} ${ARTICLE_SOURCES} >implementation.md
   DEPENDS ${ARTICLE_SOURCES}
   )
+set(USAGE_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/FreeTest.cpp)
+add_custom_command(
+  OUTPUT usage.md
+  COMMAND ${CPP2BLOG} ${USAGE_SOURCES} >usage.md
+  DEPENDS ${USAGE_SOURCES}
+  )
 add_custom_target(article
-  DEPENDS article.md)
+  DEPENDS implementation.md usage.md)

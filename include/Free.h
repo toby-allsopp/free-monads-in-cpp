@@ -3,10 +3,8 @@
 #include "Functor.h"
 #include "Monad.h"
 
-#include <boost/variant.hpp>
-
 /*!
-  ## Free Monads ##
+  ### Free Monads ###
 
   Every type _f_ that is a Functor has a "Free" Monad. A Free Monad is some
   category theory gobbledygook but it's basically the simplest possible Monad
@@ -26,13 +24,15 @@
   product types). In C++17 we will get `variant` which plugs the gap acceptably
   and in the meantime we can use `boost::variant`.
 */
-namespace Free {
+#include <boost/variant.hpp>
+
   /*!
     To define something like the Haskell `data` with two cases, we define a type
     for each case and then combine them into a `variant`. Because the `Bind`
     case is recursive we need to forward-declare them and use
     `recursive_wrapper` to define the `variant`.
    */
+namespace Free {
   template <template <typename> class F, typename A>
   struct Return;
   template <template <typename> class F, typename A>
@@ -120,10 +120,11 @@ namespace Free {
 
     The Functor instance for Free is hilariously short and to-the-point in
     Haskell:
+
     ```haskell
     instance Functor f => Functor (Free f) where
       fmap fun (Return x) = Return (fun x)
-      fmap fun (Bind x) = Bind (fmap (fmap fun) x)
+      fmap fun (Bind x)   = Bind (fmap (fmap fun) x)
     ```
 
     We assume that any user that wants to use the Functor instance of Free for a
@@ -169,11 +170,12 @@ namespace Free {
     Now that we have a way to make `Wrapper<A>`, aka `Free<F, A>`, a Functor, we
     can also make it a Monad. Once again, the instance in Haskell is
     embarrassingly short:
+
     ```haskell
     instance (Functor f) => Monad (Free f) where
-      return = Pure
-      (Free x) >>= f = Free (fmap (>>= f) x)
-      (Pure r) >>= f = f r
+      return = Return
+      (Bind x)   >>= f = Bind (fmap (>>= f) x)
+      (Return r) >>= f = f r
     ```
 
     Again, we're not actually specializing the `Monad` class template here
@@ -185,6 +187,7 @@ namespace Free {
     directly. We make an additional assumption about the wrapper class
     template---it must have a type alias member named `WrappedFree` that is an
     alias for the `Free<F, A>` type that is being wrapped, e.g.
+
     ```
     template<typename A>
     struct Wrapper : Free<F, A> {
@@ -243,6 +246,7 @@ namespace Free {
     functor F into a free monad.
 
     The implementation looks like so in Haskell:
+
     ```haskell
     liftFree :: (Functor f) => f a -> Free f a
     liftFree x = Bind (fmap Return x)
@@ -263,8 +267,8 @@ namespace Free {
 
     ```haskell
     foldFree :: Monad m => (forall x . f x -> m x) -> Free f a -> m a
-    foldFree _ (Pure a)  = return a
-    foldFree f (Free as) = f as >>= foldFree f
+    foldFree _ (Return a)  = return a
+    foldFree f (Bind as)   = f as >>= foldFree f
     ```
 
     Because we want to be totally generic with regards to the callable object
@@ -282,7 +286,7 @@ namespace Free {
 
       auto operator()(const Return<F, A>& r) { return Monad::pure<M>(r.a); }
       auto operator()(const Bind<F, A>& b) {
-        return fun(b.x) >>= [&](const auto& x) { return foldFree<M, F>(fun, x); };
+        return fun(b.x) >>= [&](const auto& x) { return foldFree<M>(fun, x); };
       }
     };
     Visitor v{fun};

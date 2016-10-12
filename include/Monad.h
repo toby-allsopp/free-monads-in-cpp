@@ -4,7 +4,7 @@
 #include "void_t.h"
 
 /*!
-  ## Monads ##
+  ### Monads ###
 
   The concept of a Monad comes from category theory, but the defintion I'm using
   is that of its practical application in Haskell.

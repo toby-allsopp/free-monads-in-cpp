@@ -3,7 +3,7 @@
 #include <utility>
 
 /*!
-  ## Functors ##
+  ### Functors ###
 
   A "Functor" is something very precise in category theory, but you can think of
   it as something that somehow contains values with some structure and allows

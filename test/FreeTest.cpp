@@ -158,10 +158,11 @@ namespace Functor {
   `Free<Prog, A>` so that we get a template with a single type parameter. The
   specialization of `Monad` defined in `Free.h` takes care of the rest.
 */
+namespace F = Free; // MSVC doesn't like "Free::Free"
 template <typename A>
-struct Program : Free::Free<Prog, A> {
-  using WrappedFree = Free::Free<Prog, A>;
-  Program(const WrappedFree& free) : Free::Free<Prog, A>(free) {}
+struct Program : F::Free<Prog, A> {
+  using WrappedFree = F::Free<Prog, A>;
+  Program(const WrappedFree& free) : F::Free<Prog, A>(free) {}
 };
 
 /*!

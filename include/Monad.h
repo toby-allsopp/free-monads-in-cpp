@@ -1,5 +1,8 @@
 #pragma once
 
+// Copyright (c) 2016 Toby Allsopp
+// See LICENSE for license details.
+
 #include "Functor.h"
 #include "void_t.h"
 

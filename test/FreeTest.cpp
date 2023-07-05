@@ -1,3 +1,6 @@
+// Copyright (c) 2016 Toby Allsopp
+// See LICENSE for license details.
+
 #include "Free.h"
 #include "Functor.h"
 #include "List.h"

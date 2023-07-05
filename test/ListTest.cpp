@@ -1,3 +1,6 @@
+// Copyright (c) 2016 Toby Allsopp
+// See LICENSE for license details.
+
 #include "catch.hpp"
 
 #include "List.h"
